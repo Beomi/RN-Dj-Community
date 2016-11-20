@@ -11,9 +11,33 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import json
+
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+# Project Envs
+with open(os.path.join(BASE_DIR, "envs.json")) as f:
+    envs = json.loads(f.read())
+
+def get_env(setting, envs):
+    try:
+        return envs[setting]
+    except KeyError:
+        error_msg = "set env var error at {}".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+
+FACEBOOK_KEY = get_env("FACEBOOK_KEY", envs)
+FACEBOOK_SECRET = get_env("FACEBOOK_SECRET", envs)
+GOOGLE_KEY = get_env("GOOGLE_KEY", envs)
+GOOGLE_SECRET = get_env("GOOGLE_SECRET", envs)
+
+GMAIL_ID = get_env("GMAIL_ID", envs)
+GMAIL_PW = get_env("GMAIL_PW", envs)
 
 
 # Quick-start development settings - unsuitable for production
