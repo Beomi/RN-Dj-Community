@@ -11,4 +11,14 @@ class Petition(TimeStampModel):
     title = models.CharField(max_length=255)
     content = models.TextField()
 
+    def __str__(self):
+        return self.title
+
+
+class Like(TimeStampModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    which_petition = models.ForeignKey(Petition)
+    is_valid = models.BooleanField(default=False)
+
+
 
