@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Project Envs
-with open(os.path.join(BASE_DIR, "envs.json")) as f:
+with open(os.path.join(os.path.dirname(BASE_DIR), "envs.json")) as f:
     envs = json.loads(f.read())
 
 def get_env(setting, envs):

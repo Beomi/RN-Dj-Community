@@ -8,27 +8,26 @@ from django.contrib.auth.models import User as django_User
 from datetime import date
 
 # Core
-from ..core.models import TimeStampModel
+from core.models import TimeStampModel
 
 
 class Petition(TimeStampModel):
     user = models.ForeignKey(django_User)
     title = models.CharField(max_length=255)
     content = models.TextField()
-    likes = models.ManyToManyField(Like, name='likes')
+    likes = models.ManyToManyField('PetitionLike', blank=True)
 
     def __str__(self):
         return self.title
 
-    @property
-    def how_many_likes(self):
-        return self.
 
-
-class Like(TimeStampModel):
+class PetitionLike(TimeStampModel):
     user = models.ForeignKey(django_User)
     which_petition = models.ForeignKey(Petition)
-    is_valid = models.BooleanField(default=False)
+    is_valid = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.which_petition.__str__() + ' : ' + str(self.is_valid)
 
 
 class UserInfo(TimeStampModel):
@@ -38,6 +37,7 @@ class UserInfo(TimeStampModel):
         validators=[MaxValueValidator(this_year_0000), MinValueValidator(20000000)],
         default=0
     )
+    membership_until = models.DateField(blank=True, null=True)
 
     @property
     def is_student(self):
@@ -45,16 +45,37 @@ class UserInfo(TimeStampModel):
             return True
         return False
 
+    @property
+    def is_test_taker(self):
+        if self.student_id > (self.this_year_0000 - 30000):
+            return True
+        return False
 
-class Vote(TimeStampModel):
+    def __str__(self):
+        return self.user + ' : ' + self.student_id
+
+
+class Poll(TimeStampModel):
     user = models.ForeignKey(django_User)
     title = models.CharField(max_length=255)
     contents = models.TextField()
-    likes = models.ManyToManyField(django_User)
 
-    @property
-    def check_liked(self, user_pk):
-        if django_User.objects.get(pk=user_pk) in self.likes:
-            return True
-        else:
-            return False
+    def __str__(self):
+        return self.title
+
+
+class PollChoice(TimeStampModel):
+    poll = models.ForeignKey(Poll)
+    choice = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.poll.__str__() + ' : ' + self.choice
+
+class PollUserVote(TimeStampModel):
+    user_mixed = models.CharField(max_length=255)
+    poll = models.ForeignKey(Poll)
+    choice = models.ForeignKey(PollChoice)
+
+    def __str__(self):
+        return self.poll.__str__() + ' : ' + self.choice.choice
+

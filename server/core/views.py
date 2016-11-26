@@ -1,6 +1,9 @@
 # pip
 import requests
 
+# python built-in
+import hashlib
+
 def _check_if_student(user_id, user_pw):
     payload = {
         'usr_id': str(user_id),
@@ -15,3 +18,9 @@ def _check_if_student(user_id, user_pw):
         else:
             result = False
         return result
+
+def hash_sha256(key): # 64
+    hash = hashlib.sha256()
+    hash.update(key.encode('utf-8'))
+    result = hash.hexdigest().upper()
+    return result
