@@ -21,6 +21,10 @@ class Petition(TimeStampModel):
         return self.title
 
 
+class PetitionProgress(TimeStampModel):
+    user = models.ForeignKey(django_User)
+
+
 class PetitionLike(TimeStampModel):
     user = models.ForeignKey(django_User)
     which_petition = models.ForeignKey(Petition)
@@ -31,13 +35,17 @@ class PetitionLike(TimeStampModel):
 
 
 class UserInfo(TimeStampModel):
-    this_year_0000 = (int(date.today().strftime('%Y')) + 1) * 10000 # this year's student id maximum, when 2016, 20170000
+    def this_year_0000(self):
+        return (int(date.today().strftime('%Y')) + 1) * 10000  # this year's student id maximum, when 2016, 20170000
+
     user = models.OneToOneField(django_User)
     student_id = models.PositiveIntegerField(
-        validators=[MaxValueValidator(this_year_0000), MinValueValidator(20000000)],
+        validators=[MaxValueValidator(this_year_0000()), MinValueValidator(20000000)],
         default=0
     )
     membership_until = models.DateField(blank=True, null=True)
+    google_id_made = models.BooleanField(default=False)
+    snue_p_updated = models.BooleanField(default=False)
 
     @property
     def is_student(self):
@@ -47,12 +55,13 @@ class UserInfo(TimeStampModel):
 
     @property
     def is_test_taker(self):
-        if self.student_id > (self.this_year_0000 - 30000):
+        if self.student_id > (self.this_year_0000() - 30000):
             return True
         return False
 
     def __str__(self):
         return self.user + ' : ' + self.student_id
+
 
 
 class Poll(TimeStampModel):
