@@ -35,7 +35,8 @@ class PetitionLike(TimeStampModel):
 
 
 class UserInfo(TimeStampModel):
-    def this_year_0000(self):
+    @staticmethod
+    def this_year_0000():
         return (int(date.today().strftime('%Y')) + 1) * 10000  # this year's student id maximum, when 2016, 20170000
 
     user = models.OneToOneField(django_User)
@@ -63,7 +64,6 @@ class UserInfo(TimeStampModel):
         return self.user + ' : ' + self.student_id
 
 
-
 class Poll(TimeStampModel):
     user = models.ForeignKey(django_User)
     title = models.CharField(max_length=255)
@@ -80,6 +80,7 @@ class PollChoice(TimeStampModel):
     def __str__(self):
         return self.poll.__str__() + ' : ' + self.choice
 
+
 class PollUserVote(TimeStampModel):
     user_mixed = models.CharField(max_length=255)
     poll = models.ForeignKey(Poll)
@@ -87,4 +88,3 @@ class PollUserVote(TimeStampModel):
 
     def __str__(self):
         return self.poll.__str__() + ' : ' + self.choice.choice
-
